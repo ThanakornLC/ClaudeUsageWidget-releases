@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Usage Widget — ดูโควตา Claude จาก menu bar</title>
+<meta name="description" content="macOS menu bar app สำหรับดูโควตาการใช้งาน Claude แบบเรียลไทม์ ดาวน์โหลดฟรี">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg-card: #1a1815;
+    --accent: #d97757;
+    --accent-soft: rgba(217, 119, 87, 0.14);
+    --text: #f0ece6;
+    --text-dim: #a09a90;
+    --green: #34c778;
+    --yellow: #f2b01e;
+    --border: rgba(240, 236, 230, 0.09);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Thai", "Segoe UI", "Noto Sans Thai", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  .glow {
+    position: fixed;
+    top: -300px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse, rgba(217,119,87,0.16), transparent 65%);
+    pointer-events: none;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; }
+
+  /* Hero */
+  header { padding: 90px 0 50px; text-align: center; }
+  .logo {
+    width: 72px; height: 72px;
+    margin: 0 auto 28px;
+    background: linear-gradient(135deg, #e08663, #c05f3e);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 40px rgba(217,119,87,0.35);
+    font-size: 36px;
+  }
+  h1 { font-size: clamp(32px, 6vw, 52px); font-weight: 800; letter-spacing: -1px; }
+  h1 .accent { color: var(--accent); }
+  .subtitle {
+    margin: 18px auto 0;
+    max-width: 560px;
+    font-size: 18px;
+    color: var(--text-dim);
+  }
+  .cta { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 32px;
+    border-radius: 14px;
+    font-size: 17px; font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #e08663, #c85f3c);
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(217,119,87,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(217,119,87,0.55); }
+  .btn-secondary {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(240,236,230,0.25); }
+  .version-note { margin-top: 14px; font-size: 13px; color: var(--text-dim); }
+
+  /* Widget mockup */
+  .mockup-wrap { display: flex; justify-content: center; padding: 30px 0 10px; }
+  .mockup {
+    width: 320px;
+    background: rgba(30, 28, 24, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+    text-align: left;
+  }
+  .mockup .m-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .mockup .m-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #e08663, #c05f3e);
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .mockup .m-title { font-size: 13px; font-weight: 700; }
+  .mockup .m-sub { font-size: 10px; color: var(--text-dim); }
+  .m-card {
+    background: rgba(240,236,230,0.045);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .m-row { display: flex; justify-content: space-between; font-size: 11.5px; margin-bottom: 6px; }
+  .m-pct-g { color: var(--green); font-weight: 700; }
+  .m-pct-y { color: var(--yellow); font-weight: 700; }
+  .m-bar { height: 6px; border-radius: 99px; background: rgba(240,236,230,0.08); overflow: hidden; }
+  .m-fill { height: 100%; border-radius: 99px; }
+  .m-reset { font-size: 9.5px; color: var(--text-dim); margin-top: 5px; }
+
+  /* Features */
+  section { padding: 70px 0; }
+  h2 { font-size: 30px; font-weight: 800; text-align: center; margin-bottom: 42px; letter-spacing: -0.5px; }
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .feature {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .feature .f-emoji { font-size: 26px; }
+  .feature h3 { font-size: 16px; margin: 12px 0 6px; }
+  .feature p { font-size: 14px; color: var(--text-dim); }
+
+  /* Install steps */
+  .steps { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 800; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step p { font-size: 14.5px; }
+  .step code {
+    background: rgba(240,236,230,0.08);
+    padding: 2px 7px; border-radius: 6px;
+    font-size: 13px;
+  }
+  .step .dim { color: var(--text-dim); font-size: 13px; }
+
+  footer {
+    padding: 40px 0 60px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13.5px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="container">
+  <div class="logo">✳︎</div>
+  <h1>Claude <span class="accent">Usage</span> Widget</h1>
+  <p class="subtitle">
+    ดูโควตา Claude แบบเรียลไทม์จาก menu bar ของ Mac —
+    Session, Weekly, cost ราย​โปรเจกต์ พร้อมไอคอนที่ขยับตอน Claude กำลังคิด
+  </p>
+  <div class="cta">
+    <a class="btn btn-primary" id="download-btn"
+       href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases/latest">
+      ⬇︎ ดาวน์โหลดฟรี
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases">
+      ทุกเวอร์ชัน
+    </a>
+  </div>
+  <p class="version-note" id="version-note">macOS 13+ · ดาวน์โหลดฟรี</p>
+</header>
+
+<div class="mockup-wrap container">
+  <div class="mockup">
+    <div class="m-head">
+      <div class="m-icon">✳︎</div>
+      <div>
+        <div class="m-title">Claude Usage</div>
+        <div class="m-sub">โควตา subscription</div>
+      </div>
+    </div>
+    <div class="m-card">
+      <div class="m-row"><span>Session (5 ชม.)</span><span class="m-pct-g">6%</span></div>
+      <div class="m-bar"><div class="m-fill" style="width:6%; background:linear-gradient(90deg,#34c778,#27a883)"></div></div>
+      <div class="m-reset">🕐 รีเซ็ต ใน 3 ชม.</div>
+    </div>
+    <div class="m-card">
+      <div class="m-row"><span>Weekly (7 วัน)</span><span class="m-pct-g">11%</span></div>
+      <div class="m-bar"><div class="m-fill" style="width:11%; background:linear-gradient(90deg,#34c778,#27a883)"></div></div>
+      <div class="m-reset">🕐 รีเซ็ต พรุ่งนี้ 20:00</div>
+    </div>
+    <div class="m-card">
+      <div class="m-row"><span>Fable (7 วัน)</span><span class="m-pct-y">20%</span></div>
+      <div class="m-bar"><div class="m-fill" style="width:20%; background:linear-gradient(90deg,#f2b01e,#e8842a)"></div></div>
+      <div class="m-reset">🕐 รีเซ็ต พรุ่งนี้ 20:00</div>
+    </div>
+  </div>
+</div>
+
+<section class="container">
+  <h2>ฟีเจอร์</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="f-emoji">📊</div>
+      <h3>โควตาครบทุกลิมิต</h3>
+      <p>Session 5 ชม., Weekly 7 วัน และลิมิตรายโมเดล พร้อมเวลารีเซ็ต อัปเดตอัตโนมัติ</p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">🐕</div>
+      <h3>ไอคอนมีชีวิต</h3>
+      <p>เลือกได้ 7 แบบ — หมา แมว นก โลมา เข็มไมล์ CLAUDE สีรุ้ง หรือโลโก้หมุน ขยับเฉพาะตอน Claude กำลังคิดจริง ๆ</p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">💸</div>
+      <h3>Cost จาก Claude Code</h3>
+      <p>ประมาณการค่าใช้จ่ายรายวันจาก local logs พร้อม breakdown รายโมเดล/รายโปรเจกต์</p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">🔔</div>
+      <h3>เตือนก่อนชนลิมิต</h3>
+      <p>Notification เมื่อใช้ถึง 70/80/90% ตามที่ตั้ง และเตือนขั้นวิกฤตที่ 95% เสมอ</p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">🔄</div>
+      <h3>อัปเดตตัวเองได้</h3>
+      <p>มีเวอร์ชันใหม่เมื่อไหร่แจ้งทันที กดปุ่มเดียว ติดตั้งแล้วเปิดใหม่ให้อัตโนมัติ</p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">🔒</div>
+      <h3>ข้อมูลไม่ออกจากเครื่อง</h3>
+      <p>ใช้ token ของ Claude Code ในเครื่องคุณเอง คุยตรงกับ Anthropic เท่านั้น ไม่มี server คนกลาง</p>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <h2>ติดตั้งใน 3 ขั้น</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <p>ดาวน์โหลดแล้วแตก zip จะได้ <code>ClaudeUsageWidget.app</code> — ลากไปไว้ใน Applications</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <p>เปิดครั้งแรกให้ <strong>คลิกขวา → Open</strong><br>
+      <span class="dim">(แอปยังไม่ได้ notarize กับ Apple เลยต้องยืนยันเองหนึ่งครั้ง)</span></p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <p>ล็อกอิน <a href="https://docs.claude.com/en/docs/claude-code" style="color:var(--accent)">Claude Code</a> ไว้ในเครื่อง แล้วดูโควตาได้จาก menu bar เลย</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    สร้างโดย TK · <a href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases">Releases</a> ·
+    ไม่ได้มีส่วนเกี่ยวข้องกับ Anthropic
+  </div>
+</footer>
+
+<script>
+  // ชี้ปุ่มดาวน์โหลดไปที่ไฟล์ zip ของ release ล่าสุดโดยตรง
+  fetch("https://api.github.com/repos/ThanakornLC/ClaudeUsageWidget-releases/releases/latest")
+    .then(r => r.ok ? r.json() : null)
+    .then(release => {
+      if (!release) return;
+      const asset = (release.assets || []).find(a => a.name.endsWith(".zip"));
+      if (asset) {
+        document.getElementById("download-btn").href = asset.browser_download_url;
+      }
+      document.getElementById("version-note").textContent =
+        `เวอร์ชันล่าสุด ${release.tag_name} · macOS 13+ · ดาวน์โหลดฟรี`;
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
