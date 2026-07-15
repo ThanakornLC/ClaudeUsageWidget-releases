@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Claude Usage Widget — ดูโควตา Claude จาก menu bar</title>
 <meta name="description" content="macOS menu bar app สำหรับดูโควตาการใช้งาน Claude แบบเรียลไทม์ ดาวน์โหลดฟรี">
+<link rel="icon" type="image/png" href="icon.png">
 <style>
   :root {
     --bg: #0f0e0c;
@@ -38,13 +39,10 @@
   /* Hero */
   header { padding: 90px 0 50px; text-align: center; }
   .logo {
-    width: 72px; height: 72px;
+    width: 88px; height: 88px;
     margin: 0 auto 28px;
-    background: linear-gradient(135deg, #e08663, #c05f3e);
-    border-radius: 18px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 12px 40px rgba(217,119,87,0.35);
-    font-size: 36px;
+    display: block;
+    filter: drop-shadow(0 12px 30px rgba(217,119,87,0.4));
   }
   h1 { font-size: clamp(32px, 6vw, 52px); font-weight: 800; letter-spacing: -1px; }
   h1 .accent { color: var(--accent); }
@@ -169,7 +167,7 @@
 <div class="glow"></div>
 
 <header class="container">
-  <div class="logo">✳︎</div>
+  <img class="logo" src="icon.png" alt="Claude Usage Widget">
   <h1>Claude <span class="accent">Usage</span> Widget</h1>
   <p class="subtitle">
     ดูโควตา Claude แบบเรียลไทม์จาก menu bar ของ Mac —
@@ -190,7 +188,7 @@
 <div class="mockup-wrap container">
   <div class="mockup">
     <div class="m-head">
-      <div class="m-icon">✳︎</div>
+      <img class="m-icon" src="icon.png" alt="" style="background:none">
       <div>
         <div class="m-title">Claude Usage</div>
         <div class="m-sub">โควตา subscription</div>
