@@ -1,0 +1,61 @@
+name: Snapshot download stats
+
+# เก็บยอดดาวน์โหลดสะสมของทุก release ลง stats/downloads.json วันละครั้ง
+# (GitHub เก็บแค่ตัวเลขสะสมปัจจุบัน ไม่มีประวัติ — เลย snapshot เองรายวัน)
+on:
+  schedule:
+    - cron: "0 0 * * *" # เที่ยงคืน UTC = 7 โมงเช้าไทย
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch release download counts
+        run: |
+          mkdir -p stats
+          python3 - <<'EOF'
+          import json, urllib.request, datetime, os
+
+          req = urllib.request.Request(
+              "https://api.github.com/repos/${{ github.repository }}/releases?per_page=100",
+              headers={"Accept": "application/vnd.github+json"},
+          )
+          releases = json.load(urllib.request.urlopen(req))
+
+          today = datetime.date.today().isoformat()
+          by_tag = {}
+          total = 0
+          for r in releases:
+              count = sum(a.get("download_count", 0) for a in r.get("assets", []))
+              by_tag[r["tag_name"]] = count
+              total += count
+
+          path = "stats/downloads.json"
+          history = []
+          if os.path.exists(path):
+              with open(path) as f:
+                  history = json.load(f)
+
+          # วันเดียวกัน run ซ้ำ → ทับ record เดิม
+          history = [h for h in history if h["date"] != today]
+          history.append({"date": today, "total": total, "by_tag": by_tag})
+          history.sort(key=lambda h: h["date"])
+
+          with open(path, "w") as f:
+              json.dump(history, f, indent=1, ensure_ascii=False)
+          print(f"{today}: total={total}")
+          EOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add stats/downloads.json
+          git diff --cached --quiet || git commit -m "Snapshot download stats"
+          git push

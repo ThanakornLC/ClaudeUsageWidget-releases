@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สถิติ — Claude Usage Widget</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icon.png">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg-card: #1a1815;
+    --accent: #d97757;
+    --text: #f0ece6;
+    --text-dim: #a09a90;
+    --green: #34c778;
+    --border: rgba(240, 236, 230, 0.09);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Thai", "Segoe UI", "Noto Sans Thai", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 20px 60px;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+  .sub { color: var(--text-dim); font-size: 14px; margin-bottom: 28px; }
+  .sub a { color: var(--accent); text-decoration: none; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .card .k { font-size: 12px; color: var(--text-dim); }
+  .card .v { font-size: 28px; font-weight: 800; color: var(--green); }
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .panel h2 { font-size: 15px; margin-bottom: 12px; }
+  canvas { width: 100%; height: 220px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  td, th { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border); }
+  td:last-child, th:last-child { text-align: right; }
+  .bar {
+    height: 6px; border-radius: 99px;
+    background: linear-gradient(90deg, #e08663, #c85f3c);
+    min-width: 2px;
+  }
+  .note { color: var(--text-dim); font-size: 12.5px; margin-top: 18px; }
+  .back { display: inline-block; margin-bottom: 18px; color: var(--accent); text-decoration: none; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="index.html">← กลับหน้าหลัก</a>
+  <h1>📈 สถิติ Claude Usage Widget</h1>
+  <p class="sub">
+    ยอดดาวน์โหลดจาก GitHub Releases (snapshot รายวัน) ·
+    ผู้เข้าชมเว็บดูได้ที่ <a href="https://claudeusagewidget.goatcounter.com" target="_blank">GoatCounter dashboard</a>
+  </p>
+
+  <div class="cards">
+    <div class="card"><div class="k">ดาวน์โหลดรวมทั้งหมด</div><div class="v" id="total">–</div></div>
+    <div class="card"><div class="k">7 วันล่าสุด</div><div class="v" id="last7">–</div></div>
+    <div class="card"><div class="k">เวอร์ชันล่าสุด</div><div class="v" id="latest" style="color:var(--accent)">–</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>ยอดดาวน์โหลดสะสมรายวัน</h2>
+    <canvas id="chart" width="720" height="220"></canvas>
+  </div>
+
+  <div class="panel">
+    <h2>รายเวอร์ชัน (ปัจจุบัน)</h2>
+    <table id="by-tag"></table>
+  </div>
+
+  <p class="note">
+    ประวัติเก็บโดย GitHub Actions วันละครั้ง (เที่ยงคืน UTC) ลงไฟล์ <code>stats/downloads.json</code> —
+    ตัวเลข "ปัจจุบัน" ดึงสดจาก GitHub API
+  </p>
+</div>
+
+<script>
+  const REPO = "ThanakornLC/ClaudeUsageWidget-releases";
+
+  // ---- ประวัติจาก snapshot รายวัน ----
+  fetch("stats/downloads.json?" + Date.now())
+    .then(r => r.ok ? r.json() : [])
+    .then(history => {
+      if (!history.length) return;
+      const last = history[history.length - 1];
+      document.getElementById("total").textContent = last.total;
+
+      // ยอด 7 วันล่าสุด = ผลต่างของสะสม
+      const weekAgo = history.filter(h =>
+        (new Date(last.date) - new Date(h.date)) / 86400000 >= 7);
+      const base = weekAgo.length ? weekAgo[weekAgo.length - 1].total : history[0].total;
+      document.getElementById("last7").textContent = "+" + Math.max(0, last.total - base);
+
+      drawChart(history);
+    })
+    .catch(() => {});
+
+  // ---- ตัวเลขสดจาก GitHub API ----
+  fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`)
+    .then(r => r.ok ? r.json() : [])
+    .then(releases => {
+      if (!releases.length) return;
+      document.getElementById("latest").textContent = releases[0].tag_name;
+
+      const rows = releases.map(r => ({
+        tag: r.tag_name,
+        count: (r.assets || []).reduce((s, a) => s + (a.download_count || 0), 0)
+      }));
+      const max = Math.max(...rows.map(r => r.count), 1);
+      document.getElementById("by-tag").innerHTML =
+        "<tr><th>เวอร์ชัน</th><th style='width:50%'></th><th>ดาวน์โหลด</th></tr>" +
+        rows.map(r =>
+          `<tr><td>${r.tag}</td>
+           <td><div class="bar" style="width:${(100 * r.count / max).toFixed(0)}%"></div></td>
+           <td>${r.count}</td></tr>`).join("");
+    })
+    .catch(() => {});
+
+  // ---- กราฟเส้นสะสม (canvas ล้วน ไม่ใช้ lib) ----
+  function drawChart(history) {
+    render();
+    // เผื่อโหลดตอน canvas ยังไม่ถูก layout (clientWidth = 0) และรองรับย่อ/ขยายหน้าต่าง
+    window.addEventListener("resize", render, { passive: true });
+    if (!document.getElementById("chart").clientWidth) {
+      requestAnimationFrame(render);
+    }
+
+    function render() {
+    const c = document.getElementById("chart");
+    const dpr = window.devicePixelRatio || 1;
+    const W = c.clientWidth || (c.parentElement && c.parentElement.clientWidth - 40) || 720;
+    const H = 220;
+    c.width = W * dpr; c.height = H * dpr;
+    const ctx = c.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const pad = { l: 36, r: 10, t: 12, b: 24 };
+    const xs = history.map(h => new Date(h.date).getTime());
+    const ys = history.map(h => h.total);
+    const xMin = Math.min(...xs), xMax = Math.max(...xs, xMin + 86400000);
+    const yMax = Math.max(...ys, 5);
+
+    const X = t => pad.l + (W - pad.l - pad.r) * (t - xMin) / (xMax - xMin);
+    const Y = v => H - pad.b - (H - pad.t - pad.b) * v / yMax;
+
+    // เส้น grid แนวนอน
+    ctx.strokeStyle = "rgba(240,236,230,0.08)";
+    ctx.fillStyle = "#a09a90";
+    ctx.font = "10px -apple-system, sans-serif";
+    for (let i = 0; i <= 4; i++) {
+      const v = Math.round(yMax * i / 4);
+      ctx.beginPath();
+      ctx.moveTo(pad.l, Y(v)); ctx.lineTo(W - pad.r, Y(v));
+      ctx.stroke();
+      ctx.fillText(v, 6, Y(v) + 3);
+    }
+
+    // เส้นข้อมูล
+    ctx.strokeStyle = "#34c778";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    history.forEach((h, i) => {
+      const x = X(xs[i]), y = Y(ys[i]);
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+
+    // จุด + label วันแรก/สุดท้าย
+    ctx.fillStyle = "#34c778";
+    history.forEach((h, i) => {
+      ctx.beginPath();
+      ctx.arc(X(xs[i]), Y(ys[i]), 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = "#a09a90";
+    ctx.fillText(history[0].date, pad.l, H - 8);
+    const lastLabel = history[history.length - 1].date;
+    ctx.fillText(lastLabel, W - pad.r - ctx.measureText(lastLabel).width, H - 8);
+    }
+  }
+</script>
+<script data-goatcounter="https://claudeusagewidget.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
