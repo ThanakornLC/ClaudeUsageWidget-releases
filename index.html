@@ -20,7 +20,7 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Thai", "Segoe UI", "Noto Sans Thai", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Thai", "Segoe UI", "Noto Sans Thai", "Noto Sans Lao", "Noto Sans Myanmar", sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
@@ -35,6 +35,22 @@
     pointer-events: none;
   }
   .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; }
+
+  /* Language selector */
+  .lang-select {
+    position: fixed;
+    top: 18px; right: 20px;
+    z-index: 10;
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .lang-select:hover { border-color: rgba(240,236,230,0.25); }
 
   /* Hero */
   header { padding: 90px 0 50px; text-align: center; }
@@ -152,6 +168,7 @@
     font-size: 13px;
   }
   .step .dim { color: var(--text-dim); font-size: 13px; }
+  .step a { color: var(--accent); }
 
   footer {
     padding: 40px 0 60px;
@@ -166,20 +183,24 @@
 <body>
 <div class="glow"></div>
 
+<select class="lang-select" id="lang-select" aria-label="Language">
+  <option value="th">🌐 ไทย</option>
+  <option value="en">🌐 English</option>
+  <option value="zh">🌐 中文</option>
+  <option value="lo">🌐 ລາວ</option>
+  <option value="vi">🌐 Tiếng Việt</option>
+  <option value="my">🌐 မြန်မာ</option>
+</select>
+
 <header class="container">
   <img class="logo" src="icon.png" alt="Claude Usage Widget">
   <h1>Claude <span class="accent">Usage</span> Widget</h1>
-  <p class="subtitle">
-    ดูโควตา Claude แบบเรียลไทม์จาก menu bar ของ Mac —
-    Session, Weekly, cost ราย​โปรเจกต์ พร้อมไอคอนที่ขยับตอน Claude กำลังคิด
-  </p>
+  <p class="subtitle" data-i18n="subtitle"></p>
   <div class="cta">
-    <a class="btn btn-primary" id="download-btn"
-       href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases/latest">
-      ⬇︎ ดาวน์โหลดฟรี
-    </a>
+    <a class="btn btn-primary" id="download-btn" data-i18n="downloadBtn"
+       href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases/latest"></a>
   </div>
-  <p class="version-note" id="version-note">macOS 13+ · ดาวน์โหลดฟรี</p>
+  <p class="version-note" id="version-note"></p>
 </header>
 
 <div class="mockup-wrap container">
@@ -188,91 +209,341 @@
       <img class="m-icon" src="icon.png" alt="" style="background:none">
       <div>
         <div class="m-title">Claude Usage</div>
-        <div class="m-sub">โควตา subscription</div>
+        <div class="m-sub">Plan · Max</div>
       </div>
     </div>
     <div class="m-card">
-      <div class="m-row"><span>Session (5 ชม.)</span><span class="m-pct-g">6%</span></div>
+      <div class="m-row"><span data-i18n="mSession"></span><span class="m-pct-g">6%</span></div>
       <div class="m-bar"><div class="m-fill" style="width:6%; background:linear-gradient(90deg,#34c778,#27a883)"></div></div>
-      <div class="m-reset">🕐 รีเซ็ต ใน 3 ชม.</div>
+      <div class="m-reset" data-i18n="mReset1"></div>
     </div>
     <div class="m-card">
-      <div class="m-row"><span>Weekly (7 วัน)</span><span class="m-pct-g">11%</span></div>
+      <div class="m-row"><span data-i18n="mWeekly"></span><span class="m-pct-g">11%</span></div>
       <div class="m-bar"><div class="m-fill" style="width:11%; background:linear-gradient(90deg,#34c778,#27a883)"></div></div>
-      <div class="m-reset">🕐 รีเซ็ต พรุ่งนี้ 20:00</div>
+      <div class="m-reset" data-i18n="mReset2"></div>
     </div>
     <div class="m-card">
-      <div class="m-row"><span>Fable (7 วัน)</span><span class="m-pct-y">20%</span></div>
+      <div class="m-row"><span data-i18n="mFable"></span><span class="m-pct-y">20%</span></div>
       <div class="m-bar"><div class="m-fill" style="width:20%; background:linear-gradient(90deg,#f2b01e,#e8842a)"></div></div>
-      <div class="m-reset">🕐 รีเซ็ต พรุ่งนี้ 20:00</div>
+      <div class="m-reset" data-i18n="mReset2"></div>
     </div>
   </div>
 </div>
 
 <section class="container">
-  <h2>ฟีเจอร์</h2>
+  <h2 data-i18n="featuresH2"></h2>
   <div class="features">
     <div class="feature">
       <div class="f-emoji">📊</div>
-      <h3>โควตาครบทุกลิมิต</h3>
-      <p>Session 5 ชม., Weekly 7 วัน และลิมิตรายโมเดล พร้อมเวลารีเซ็ต อัปเดตอัตโนมัติ</p>
+      <h3 data-i18n="f1t"></h3>
+      <p data-i18n="f1d"></p>
     </div>
     <div class="feature">
       <div class="f-emoji">🐕</div>
-      <h3>ไอคอนมีชีวิต</h3>
-      <p>เลือกได้ 7 แบบ — หมา แมว นก โลมา เข็มไมล์ CLAUDE สีรุ้ง หรือโลโก้หมุน ขยับเฉพาะตอน Claude กำลังคิดจริง ๆ</p>
+      <h3 data-i18n="f2t"></h3>
+      <p data-i18n="f2d"></p>
     </div>
     <div class="feature">
       <div class="f-emoji">💸</div>
-      <h3>Cost จาก Claude Code</h3>
-      <p>ประมาณการค่าใช้จ่ายรายวันจาก local logs พร้อม breakdown รายโมเดล/รายโปรเจกต์</p>
+      <h3 data-i18n="f3t"></h3>
+      <p data-i18n="f3d"></p>
     </div>
     <div class="feature">
       <div class="f-emoji">🔔</div>
-      <h3>เตือนก่อนชนลิมิต</h3>
-      <p>Notification เมื่อใช้ถึง 70/80/90% ตามที่ตั้ง และเตือนขั้นวิกฤตที่ 95% เสมอ</p>
+      <h3 data-i18n="f4t"></h3>
+      <p data-i18n="f4d"></p>
     </div>
     <div class="feature">
       <div class="f-emoji">🔄</div>
-      <h3>อัปเดตตัวเองได้</h3>
-      <p>มีเวอร์ชันใหม่เมื่อไหร่แจ้งทันที กดปุ่มเดียว ติดตั้งแล้วเปิดใหม่ให้อัตโนมัติ</p>
+      <h3 data-i18n="f5t"></h3>
+      <p data-i18n="f5d"></p>
+    </div>
+    <div class="feature">
+      <div class="f-emoji">🌏</div>
+      <h3 data-i18n="f6t"></h3>
+      <p data-i18n="f6d"></p>
     </div>
     <div class="feature">
       <div class="f-emoji">🔒</div>
-      <h3>ข้อมูลไม่ออกจากเครื่อง</h3>
-      <p>ใช้ token ของ Claude Code ในเครื่องคุณเอง คุยตรงกับ Anthropic เท่านั้น ไม่มี server คนกลาง</p>
+      <h3 data-i18n="f7t"></h3>
+      <p data-i18n="f7d"></p>
     </div>
   </div>
 </section>
 
 <section class="container">
-  <h2>ติดตั้งใน 3 ขั้น</h2>
+  <h2 data-i18n="installH2"></h2>
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
-      <p>ดาวน์โหลดแล้วแตก zip จะได้ <code>ClaudeUsageWidget.app</code> — ลากไปไว้ใน Applications</p>
+      <p data-i18n="step1"></p>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <p>ดับเบิ้ลคลิกเปิดแอปก่อน เมื่อ macOS ขึ้นเตือนให้กด <strong>Done</strong> จากนั้นไปที่ <strong>System Settings → Privacy & Security</strong> → กด <strong>Open Anyway</strong> (ปุ่มนี้จะแสดงหลังจากลองเปิดแอปแล้วเท่านั้น)<br>
-      <span class="dim">หรือใน Terminal: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>
-      (แอปยังไม่ได้ notarize กับ Apple เลยต้องยืนยันเองหนึ่งครั้ง — ทำครั้งเดียวพอ)</span></p>
+      <p><span data-i18n="step2"></span><br>
+      <span class="dim" data-i18n="step2dim"></span></p>
     </div>
     <div class="step">
       <div class="step-num">3</div>
-      <p>ล็อกอิน <a href="https://docs.claude.com/en/docs/claude-code" style="color:var(--accent)">Claude Code</a> ไว้ในเครื่อง แล้วดูโควตาได้จาก menu bar เลย</p>
+      <p data-i18n="step3"></p>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="container">
-    สร้างโดย TK · <a href="https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases">Releases</a> ·
-    ไม่ได้มีส่วนเกี่ยวข้องกับ Anthropic
-  </div>
+  <div class="container" data-i18n="footerHtml"></div>
 </footer>
 
 <script>
+  const CLAUDE_CODE_URL = "https://docs.claude.com/en/docs/claude-code";
+  const RELEASES_URL = "https://github.com/ThanakornLC/ClaudeUsageWidget-releases/releases";
+
+  const I18N = {
+    th: {
+      title: "Claude Usage Widget — ดูโควตา Claude จาก menu bar",
+      metaDesc: "macOS menu bar app สำหรับดูโควตาการใช้งาน Claude แบบเรียลไทม์ ดาวน์โหลดฟรี",
+      subtitle: "ดูโควตา Claude แบบเรียลไทม์จาก menu bar ของ Mac — Session, Weekly, cost ราย​โปรเจกต์ พร้อมไอคอนที่ขยับตอน Claude กำลังคิด",
+      downloadBtn: "⬇︎ ดาวน์โหลดฟรี",
+      macFree: "macOS 13+ · ดาวน์โหลดฟรี",
+      latestFmt: "เวอร์ชันล่าสุด {v}",
+      featuresH2: "ฟีเจอร์",
+      f1t: "โควตาครบทุกลิมิต",
+      f1d: "Session 5 ชม., Weekly 7 วัน และลิมิตรายโมเดล พร้อมเวลารีเซ็ต อัปเดตอัตโนมัติ",
+      f2t: "ไอคอนมีชีวิต",
+      f2d: "เลือกได้ 7 แบบ — หมา แมว นก โลมา เข็มไมล์ CLAUDE สีรุ้ง หรือโลโก้หมุน ขยับเฉพาะตอน Claude กำลังคิดจริง ๆ",
+      f3t: "Cost จาก Claude Code",
+      f3d: "ประมาณการค่าใช้จ่ายรายวันจาก local logs พร้อม breakdown รายโมเดล/รายโปรเจกต์",
+      f4t: "เตือนก่อนชนลิมิต",
+      f4d: "Notification เมื่อใช้ถึง 70/80/90% ตามที่ตั้ง และเตือนขั้นวิกฤตที่ 95% เสมอ",
+      f5t: "อัปเดตตัวเองได้",
+      f5d: "มีเวอร์ชันใหม่เมื่อไหร่แจ้งทันที กดปุ่มเดียว มีหลอดความคืบหน้า เสร็จแล้วกด Start เปิดเวอร์ชันใหม่",
+      f6t: "รองรับ 6 ภาษา",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — เลือกได้ในหน้าตั้งค่า",
+      f7t: "ข้อมูลไม่ออกจากเครื่อง",
+      f7d: "ใช้ token ของ Claude Code ในเครื่องคุณเอง คุยตรงกับ Anthropic เท่านั้น ไม่มี server คนกลาง",
+      installH2: "ติดตั้งใน 3 ขั้น",
+      step1: "ดาวน์โหลดแล้วแตก zip จะได้ <code>ClaudeUsageWidget.app</code> — ลากไปไว้ใน Applications",
+      step2: "ดับเบิ้ลคลิกเปิดแอปก่อน เมื่อ macOS ขึ้นเตือนให้กด <strong>Done</strong> จากนั้นไปที่ <strong>System Settings → Privacy & Security</strong> → กด <strong>Open Anyway</strong> (ปุ่มนี้จะแสดงหลังจากลองเปิดแอปแล้วเท่านั้น)",
+      step2dim: "หรือใน Terminal: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>(แอปยังไม่ได้ notarize กับ Apple เลยต้องยืนยันเองหนึ่งครั้ง — ทำครั้งเดียวพอ)",
+      step3: `ล็อกอิน <a href="${CLAUDE_CODE_URL}">Claude Code</a> ไว้ในเครื่อง แล้วดูโควตาได้จาก menu bar เลย`,
+      footerHtml: `สร้างโดย TK · <a href="${RELEASES_URL}">Releases</a> · ไม่ได้มีส่วนเกี่ยวข้องกับ Anthropic`,
+      mSession: "Session (5 ชม.)",
+      mWeekly: "Weekly (7 วัน)",
+      mFable: "Fable (7 วัน)",
+      mReset1: "🕐 รีเซ็ต ใน 3 ชม.",
+      mReset2: "🕐 รีเซ็ต พรุ่งนี้ 20:00"
+    },
+    en: {
+      title: "Claude Usage Widget — Claude quota in your menu bar",
+      metaDesc: "A macOS menu bar app for watching your Claude usage quota in real time. Free download.",
+      subtitle: "Watch your Claude quota in real time from the Mac menu bar — Session, Weekly, per-project cost, with an icon that moves while Claude is thinking",
+      downloadBtn: "⬇︎ Free download",
+      macFree: "macOS 13+ · free download",
+      latestFmt: "Latest version {v}",
+      featuresH2: "Features",
+      f1t: "Every limit covered",
+      f1d: "5-hour session, 7-day weekly, and per-model limits with reset times, refreshed automatically",
+      f2t: "A living icon",
+      f2d: "7 styles — dog, cat, bird, dolphin, gauge, rainbow CLAUDE, or spinning logo. It only moves while Claude is actually thinking",
+      f3t: "Cost from Claude Code",
+      f3d: "Daily cost estimates from local logs with per-model and per-project breakdowns",
+      f4t: "Warned before you hit the limit",
+      f4d: "Notifications at your chosen 70/80/90%, plus a critical alert at 95% every time",
+      f5t: "Updates itself",
+      f5d: "Get notified the moment a new version ships. One click, a progress bar, then hit Start to relaunch",
+      f6t: "6 languages",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — pick yours in Settings",
+      f7t: "Your data stays on your Mac",
+      f7d: "Uses your own Claude Code token and talks only to Anthropic — no middleman server",
+      installH2: "Install in 3 steps",
+      step1: "Download and unzip to get <code>ClaudeUsageWidget.app</code> — drag it into Applications",
+      step2: "Double-click the app first. When macOS warns you, click <strong>Done</strong>, then go to <strong>System Settings → Privacy & Security</strong> → click <strong>Open Anyway</strong> (the button only appears after you've tried opening the app)",
+      step2dim: "Or in Terminal: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>(The app isn't notarized with Apple yet, so you confirm it once — one time only)",
+      step3: `Log in to <a href="${CLAUDE_CODE_URL}">Claude Code</a> on this Mac, then watch your quota right from the menu bar`,
+      footerHtml: `Made by TK · <a href="${RELEASES_URL}">Releases</a> · Not affiliated with Anthropic`,
+      mSession: "Session (5 hr)",
+      mWeekly: "Weekly (7 days)",
+      mFable: "Fable (7 days)",
+      mReset1: "🕐 Resets in 3 hr",
+      mReset2: "🕐 Resets tomorrow 20:00"
+    },
+    zh: {
+      title: "Claude Usage Widget — 在菜单栏查看 Claude 限额",
+      metaDesc: "实时查看 Claude 使用限额的 macOS 菜单栏应用，免费下载",
+      subtitle: "在 Mac 菜单栏实时查看 Claude 限额 — 会话、每周、按项目费用，图标还会在 Claude 思考时动起来",
+      downloadBtn: "⬇︎ 免费下载",
+      macFree: "macOS 13+ · 免费下载",
+      latestFmt: "最新版本 {v}",
+      featuresH2: "功能",
+      f1t: "覆盖所有限额",
+      f1d: "5 小时会话、7 天每周及按模型限额，附重置时间，自动刷新",
+      f2t: "会动的图标",
+      f2d: "7 种样式 — 狗、猫、鸟、海豚、仪表盘、彩虹 CLAUDE 或旋转 Logo，只在 Claude 真正思考时才动",
+      f3t: "Claude Code 费用",
+      f3d: "根据本地日志估算每日费用，按模型/按项目细分",
+      f4t: "限额前提醒",
+      f4d: "达到设定的 70/80/90% 时通知，95% 时始终发出紧急提醒",
+      f5t: "自动更新",
+      f5d: "新版本发布即刻通知，一键更新，带进度条，完成后点 Start 重新打开",
+      f6t: "支持 6 种语言",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — 在设置中选择",
+      f7t: "数据不离开你的电脑",
+      f7d: "使用你本机的 Claude Code token，只与 Anthropic 通信，没有中间服务器",
+      installH2: "3 步安装",
+      step1: "下载并解压得到 <code>ClaudeUsageWidget.app</code> — 拖入 Applications",
+      step2: "先双击打开应用。macOS 弹出警告时点 <strong>Done</strong>，然后前往 <strong>System Settings → Privacy & Security</strong> → 点 <strong>Open Anyway</strong>（此按钮只有在尝试打开应用后才会出现）",
+      step2dim: "或在终端执行：<code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>（应用尚未经 Apple 公证，需手动确认一次 — 仅此一次）",
+      step3: `在本机登录 <a href="${CLAUDE_CODE_URL}">Claude Code</a>，即可在菜单栏查看限额`,
+      footerHtml: `由 TK 制作 · <a href="${RELEASES_URL}">Releases</a> · 与 Anthropic 无关`,
+      mSession: "会话（5 小时）",
+      mWeekly: "每周（7 天）",
+      mFable: "Fable（7 天）",
+      mReset1: "🕐 3 小时后重置",
+      mReset2: "🕐 明天 20:00 重置"
+    },
+    lo: {
+      title: "Claude Usage Widget — ເບິ່ງໂຄຕາ Claude ຈາກ menu bar",
+      metaDesc: "ແອັບ menu bar ຂອງ macOS ສຳລັບເບິ່ງໂຄຕາການໃຊ້ Claude ແບບເຣຍລ໌ທາມ ດາວໂຫລດຟຣີ",
+      subtitle: "ເບິ່ງໂຄຕາ Claude ແບບເຣຍລ໌ທາມຈາກ menu bar ຂອງ Mac — Session, Weekly, cost ຕາມໂປຣເຈັກ ພ້ອມໄອຄອນທີ່ເໜັງຕອນ Claude ກຳລັງຄິດ",
+      downloadBtn: "⬇︎ ດາວໂຫລດຟຣີ",
+      macFree: "macOS 13+ · ດາວໂຫລດຟຣີ",
+      latestFmt: "ເວີຊັນຫຼ້າສຸດ {v}",
+      featuresH2: "ຄຸນສົມບັດ",
+      f1t: "ໂຄຕາຄົບທຸກລິມິດ",
+      f1d: "Session 5 ຊມ., Weekly 7 ມື້ ແລະລິມິດຕາມໂມເດວ ພ້ອມເວລາຣີເຊັດ ອັບເດດອັດຕະໂນມັດ",
+      f2t: "ໄອຄອນມີຊີວິດ",
+      f2d: "ເລືອກໄດ້ 7 ແບບ — ໝາ ແມວ ນົກ ປາໂລມາ ເຂັມວັດ CLAUDE ສີຮຸ້ງ ຫຼືໂລໂກ້ໝູນ ເໜັງສະເພາະຕອນ Claude ກຳລັງຄິດແທ້ໆ",
+      f3t: "Cost ຈາກ Claude Code",
+      f3d: "ປະມານຄ່າໃຊ້ຈ່າຍລາຍວັນຈາກ local logs ພ້ອມແຍກຕາມໂມເດວ/ໂປຣເຈັກ",
+      f4t: "ເຕືອນກ່ອນຮອດລິມິດ",
+      f4d: "ແຈ້ງເຕືອນເມື່ອໃຊ້ຮອດ 70/80/90% ຕາມທີ່ຕັ້ງ ແລະເຕືອນຂັ້ນວິກິດທີ່ 95% ສະເໝີ",
+      f5t: "ອັບເດດຕົວເອງໄດ້",
+      f5d: "ມີເວີຊັນໃໝ່ເມື່ອໃດແຈ້ງທັນທີ ກົດປຸ່ມດຽວ ມີແຖບຄວາມຄືບໜ້າ ແລ້ວກົດ Start ເປີດເວີຊັນໃໝ່",
+      f6t: "ຮອງຮັບ 6 ພາສາ",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — ເລືອກໄດ້ໃນຕັ້ງຄ່າ",
+      f7t: "ຂໍ້ມູນບໍ່ອອກຈາກເຄື່ອງ",
+      f7d: "ໃຊ້ token ຂອງ Claude Code ໃນເຄື່ອງເຈົ້າເອງ ຕິດຕໍ່ກັບ Anthropic ໂດຍກົງ ບໍ່ມີ server ຄົນກາງ",
+      installH2: "ຕິດຕັ້ງໃນ 3 ຂັ້ນຕອນ",
+      step1: "ດາວໂຫລດແລ້ວແຕກ zip ຈະໄດ້ <code>ClaudeUsageWidget.app</code> — ລາກໄປໃສ່ Applications",
+      step2: "ດັບເບິນຄລິກເປີດແອັບກ່ອນ ເມື່ອ macOS ເຕືອນໃຫ້ກົດ <strong>Done</strong> ຈາກນັ້ນໄປທີ່ <strong>System Settings → Privacy & Security</strong> → ກົດ <strong>Open Anyway</strong> (ປຸ່ມນີ້ຈະສະແດງຫຼັງຈາກລອງເປີດແອັບແລ້ວເທົ່ານັ້ນ)",
+      step2dim: "ຫຼືໃນ Terminal: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>(ແອັບຍັງບໍ່ໄດ້ notarize ກັບ Apple ຈຶ່ງຕ້ອງຢືນຢັນເອງເທື່ອໜຶ່ງ — ເຮັດເທື່ອດຽວພໍ)",
+      step3: `Login <a href="${CLAUDE_CODE_URL}">Claude Code</a> ໄວ້ໃນເຄື່ອງ ແລ້ວເບິ່ງໂຄຕາໄດ້ຈາກ menu bar ເລີຍ`,
+      footerHtml: `ສ້າງໂດຍ TK · <a href="${RELEASES_URL}">Releases</a> · ບໍ່ກ່ຽວຂ້ອງກັບ Anthropic`,
+      mSession: "Session (5 ຊມ.)",
+      mWeekly: "Weekly (7 ມື້)",
+      mFable: "Fable (7 ມື້)",
+      mReset1: "🕐 ຣີເຊັດ ໃນ 3 ຊມ.",
+      mReset2: "🕐 ຣີເຊັດ ມື້ອື່ນ 20:00"
+    },
+    vi: {
+      title: "Claude Usage Widget — Xem hạn mức Claude từ menu bar",
+      metaDesc: "Ứng dụng menu bar macOS để theo dõi hạn mức Claude theo thời gian thực. Tải miễn phí.",
+      subtitle: "Theo dõi hạn mức Claude theo thời gian thực từ menu bar của Mac — Session, Weekly, chi phí theo dự án, kèm biểu tượng chuyển động khi Claude đang suy nghĩ",
+      downloadBtn: "⬇︎ Tải miễn phí",
+      macFree: "macOS 13+ · tải miễn phí",
+      latestFmt: "Phiên bản mới nhất {v}",
+      featuresH2: "Tính năng",
+      f1t: "Đủ mọi hạn mức",
+      f1d: "Phiên 5 giờ, hàng tuần 7 ngày và hạn mức theo mô hình, kèm giờ đặt lại, tự động cập nhật",
+      f2t: "Biểu tượng sống động",
+      f2d: "7 kiểu — chó, mèo, chim, cá heo, đồng hồ đo, CLAUDE cầu vồng hoặc logo xoay. Chỉ chuyển động khi Claude thật sự đang suy nghĩ",
+      f3t: "Chi phí từ Claude Code",
+      f3d: "Ước tính chi phí hằng ngày từ log cục bộ, chia theo mô hình/dự án",
+      f4t: "Cảnh báo trước khi chạm hạn mức",
+      f4d: "Thông báo ở mức 70/80/90% tùy chọn, luôn cảnh báo khẩn ở 95%",
+      f5t: "Tự cập nhật",
+      f5d: "Có phiên bản mới là báo ngay. Một cú bấm, có thanh tiến trình, xong bấm Start để mở lại",
+      f6t: "Hỗ trợ 6 ngôn ngữ",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — chọn trong Cài đặt",
+      f7t: "Dữ liệu không rời máy bạn",
+      f7d: "Dùng token Claude Code trên máy bạn, chỉ liên lạc trực tiếp với Anthropic, không có server trung gian",
+      installH2: "Cài đặt trong 3 bước",
+      step1: "Tải về và giải nén để có <code>ClaudeUsageWidget.app</code> — kéo vào Applications",
+      step2: "Nhấp đúp mở ứng dụng trước. Khi macOS cảnh báo, bấm <strong>Done</strong>, rồi vào <strong>System Settings → Privacy & Security</strong> → bấm <strong>Open Anyway</strong> (nút này chỉ hiện sau khi bạn đã thử mở ứng dụng)",
+      step2dim: "Hoặc trong Terminal: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>(Ứng dụng chưa được Apple notarize nên cần xác nhận một lần — chỉ một lần duy nhất)",
+      step3: `Đăng nhập <a href="${CLAUDE_CODE_URL}">Claude Code</a> trên máy, rồi xem hạn mức ngay từ menu bar`,
+      footerHtml: `Tạo bởi TK · <a href="${RELEASES_URL}">Releases</a> · Không liên quan đến Anthropic`,
+      mSession: "Phiên (5 giờ)",
+      mWeekly: "Hàng tuần (7 ngày)",
+      mFable: "Fable (7 ngày)",
+      mReset1: "🕐 Đặt lại sau 3 giờ",
+      mReset2: "🕐 Đặt lại ngày mai 20:00"
+    },
+    my: {
+      title: "Claude Usage Widget — menu bar မှ Claude ကန့်သတ်ချက်ကြည့်ရန်",
+      metaDesc: "Claude အသုံးပြုမှုကန့်သတ်ချက်ကို အချိန်နှင့်တပြေးညီကြည့်နိုင်သော macOS menu bar အက်ပ် — အခမဲ့ဒေါင်းလုဒ်",
+      subtitle: "Mac ၏ menu bar မှ Claude ကန့်သတ်ချက်ကို အချိန်နှင့်တပြေးညီ ကြည့်ပါ — Session, Weekly, ပရောဂျက်အလိုက် cost နှင့် Claude စဉ်းစားနေစဉ် လှုပ်ရှားသည့် အိုင်ကွန်ပါ",
+      downloadBtn: "⬇︎ အခမဲ့ဒေါင်းလုဒ်",
+      macFree: "macOS 13+ · အခမဲ့ဒေါင်းလုဒ်",
+      latestFmt: "နောက်ဆုံးဗားရှင်း {v}",
+      featuresH2: "လုပ်ဆောင်ချက်များ",
+      f1t: "ကန့်သတ်ချက်အားလုံး ပြည့်စုံ",
+      f1d: "Session 5 နာရီ၊ Weekly 7 ရက်နှင့် မော်ဒယ်အလိုက် ကန့်သတ်ချက်များ ပြန်စချိန်နှင့်အတူ အလိုအလျောက် အပ်ဒိတ်",
+      f2t: "သက်ဝင်လှုပ်ရှားသော အိုင်ကွန်",
+      f2d: "၇ မျိုးရွေးနိုင် — ခွေး ကြောင် ငှက် လင်းပိုင် တိုင်းတာမီတာ သက်တံရောင် CLAUDE သို့မဟုတ် လည်နေသောလိုဂို — Claude တကယ်စဉ်းစားနေမှသာ လှုပ်သည်",
+      f3t: "Claude Code မှ Cost",
+      f3d: "စက်တွင်း log များမှ နေ့စဉ်ကုန်ကျစရိတ် ခန့်မှန်းချက် မော်ဒယ်/ပရောဂျက်အလိုက် ခွဲပြသည်",
+      f4t: "ကန့်သတ်ချက်မတိုင်မီ သတိပေး",
+      f4d: "သတ်မှတ်ထားသော 70/80/90% ရောက်လျှင် အသိပေးပြီး 95% တွင် အရေးပေါ်သတိပေးချက် အမြဲပို့သည်",
+      f5t: "ကိုယ်တိုင် အပ်ဒိတ်",
+      f5d: "ဗားရှင်းအသစ်ထွက်လျှင် ချက်ချင်းအသိပေး တစ်ချက်နှိပ် progress bar ပါပြီး ပြီးလျှင် Start နှိပ်၍ ပြန်ဖွင့်ပါ",
+      f6t: "ဘာသာစကား ၆ မျိုး",
+      f6d: "ไทย · English · 中文 · ລາວ · Tiếng Việt · မြန်မာ — ဆက်တင်တွင် ရွေးပါ",
+      f7t: "ဒေတာသည် သင့်စက်မှ မထွက်ပါ",
+      f7d: "သင့်စက်ရှိ Claude Code token ကိုသုံးပြီး Anthropic နှင့်သာ တိုက်ရိုက်ဆက်သွယ်သည် — ကြားခံ server မရှိပါ",
+      installH2: "၃ ဆင့်ဖြင့် ထည့်သွင်းရန်",
+      step1: "ဒေါင်းလုဒ်လုပ်ပြီး zip ဖြည်လျှင် <code>ClaudeUsageWidget.app</code> ရမည် — Applications ထဲ ဆွဲထည့်ပါ",
+      step2: "အက်ပ်ကို အရင် နှစ်ချက်နှိပ်ဖွင့်ပါ။ macOS သတိပေးလျှင် <strong>Done</strong> နှိပ်ပြီး <strong>System Settings → Privacy & Security</strong> သို့သွား၍ <strong>Open Anyway</strong> နှိပ်ပါ (ဤခလုတ်သည် အက်ပ်ကို ဖွင့်ကြည့်ပြီးမှသာ ပေါ်မည်)",
+      step2dim: "သို့မဟုတ် Terminal တွင်: <code>xattr -d com.apple.quarantine /Applications/ClaudeUsageWidget.app</code><br>(အက်ပ်ကို Apple ထံ notarize မလုပ်ရသေးသဖြင့် တစ်ကြိမ် ကိုယ်တိုင်အတည်ပြုရန်လိုသည် — တစ်ကြိမ်သာ)",
+      step3: `ဤစက်တွင် <a href="${CLAUDE_CODE_URL}">Claude Code</a> ကို login ဝင်ထားပြီး menu bar မှ ကန့်သတ်ချက်ကို ကြည့်နိုင်ပြီ`,
+      footerHtml: `TK မှ ဖန်တီးသည် · <a href="${RELEASES_URL}">Releases</a> · Anthropic နှင့် သက်ဆိုင်ခြင်းမရှိပါ`,
+      mSession: "Session (၅ နာရီ)",
+      mWeekly: "Weekly (၇ ရက်)",
+      mFable: "Fable (၇ ရက်)",
+      mReset1: "🕐 ၃ နာရီအတွင်း ပြန်စမည်",
+      mReset2: "🕐 မနက်ဖြန် 20:00 ပြန်စမည်"
+    }
+  };
+
+  let currentLang = "th";
+  let latestTag = null;
+
+  function detectLang() {
+    const saved = localStorage.getItem("lang");
+    if (saved && I18N[saved]) return saved;
+    for (const l of navigator.languages || [navigator.language || "th"]) {
+      const code = (l || "").slice(0, 2).toLowerCase();
+      if (I18N[code]) return code;
+    }
+    return "th";
+  }
+
+  function updateVersionNote() {
+    const t = I18N[currentLang];
+    const note = document.getElementById("version-note");
+    note.textContent = latestTag
+      ? `${t.latestFmt.replace("{v}", latestTag)} · ${t.macFree}`
+      : t.macFree;
+  }
+
+  function applyLang(lang) {
+    currentLang = I18N[lang] ? lang : "th";
+    const t = I18N[currentLang];
+    document.documentElement.lang = currentLang;
+    document.title = t.title;
+    document.querySelector('meta[name="description"]').setAttribute("content", t.metaDesc);
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const val = t[el.dataset.i18n];
+      if (val !== undefined) el.innerHTML = val;
+    });
+    document.getElementById("lang-select").value = currentLang;
+    localStorage.setItem("lang", currentLang);
+    updateVersionNote();
+  }
+
+  document.getElementById("lang-select").addEventListener("change", e => applyLang(e.target.value));
+  applyLang(detectLang());
+
   // ชี้ปุ่มดาวน์โหลดไปที่ไฟล์ zip ของ release ล่าสุดโดยตรง
   fetch("https://api.github.com/repos/ThanakornLC/ClaudeUsageWidget-releases/releases/latest")
     .then(r => r.ok ? r.json() : null)
@@ -282,8 +553,8 @@
       if (asset) {
         document.getElementById("download-btn").href = asset.browser_download_url;
       }
-      document.getElementById("version-note").textContent =
-        `เวอร์ชันล่าสุด ${release.tag_name} · macOS 13+ · ดาวน์โหลดฟรี`;
+      latestTag = release.tag_name;
+      updateVersionNote();
     })
     .catch(() => {});
 </script>
